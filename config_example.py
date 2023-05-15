@@ -7,3 +7,4 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S',
 )
 CITY = 'Moscow'
+WEATHER_API_KEY = 'key'

@@ -1,19 +1,21 @@
 import asyncio
 from asyncio import FIRST_COMPLETED
-from http import fetch_data, Service
-from config import logging
+from aiorequest import fetch_data, Service
+from config import logging, WEATHER_API_KEY, CITY
 
 
 SERVICES = [
-    Service('Meteo1', 'https:///?format=json', 'prognoz'),
-    Service('Meteo2', 'http:///json', 'query'),
+    Service(
+        'weatherapi.com',
+        f'http://api.weatherapi.com/v1/current.json?key={WEATHER_API_KEY}&q={CITY}&aqi=no',
+        ['current', 'temp_c'],
+    ),
 ]
 
 
 async def fetch_weather_fastest(timeout: int) -> str:
     weather = 'no result'
-    futures = [fetch_data(s) for s in SERVICES]
-    # res = await asyncio.wait(futures)
+    futures = [asyncio.create_task(fetch_data(s)) for s in SERVICES]
     done, pending = await asyncio.wait(
         futures,
         timeout=timeout,
@@ -33,9 +35,9 @@ async def fetch_weather_fastest(timeout: int) -> str:
 
 def main():
     loop = asyncio.get_event_loop()
-    res = loop.run_until_complete(fetch_weather_fastest(1))
+    result = loop.run_until_complete(fetch_weather_fastest(1))
     loop.close()
-    logging.info('Result from loop: {!r}', res)
+    logging.info(f'Температура воздуха в {CITY}: {result} °C')
 
 
 if __name__ == '__main__':

@@ -10,7 +10,7 @@ from config import logging
 class Service:
     name: str
     url: str
-    data_field: str
+    data_field: list
 
 
 async def fetch(session: ClientSession, url: str) -> dict:
@@ -20,24 +20,26 @@ async def fetch(session: ClientSession, url: str) -> dict:
 
 async def fetch_data(service: Service) -> str:
     result_data = 'not found'
-    logging.info('Starting with {}', service.name)
+    logging.info(f'Starting with {service.name}')
     start = time()
     try:
         async with aiohttp.ClientSession() as session:
             json = await fetch(session, service.url)
             end = time()
-            logging.info('Got answer from {} after {:3f}', service.name, end-start)
+            logging.info(f'Got answer from {service.name} after {end-start}')
 
     except CancelledError as err:
-        logging.debug('Cancelled fetching {!r}', service.name, exc_info=err)
-        # logging.opt(exception=err).debug('Cancelled fetching {!r}', service.name)
+        logging.debug(f'Cancelled fetching {service.name} error: {err}')
         return 'cancelled'
     except Exception as err:
-        logging.exception('Error with {}', service)
+        logging.exception(f'Error with {service} error: {err}')
         return 'error'
 
     try:
-        result_data = json[service.data_field]
-    except KeyError:
-         logging.exception('Could not get data from {} user field {}', json, service.name)
+        result_data = json[service.data_field[0]]
+        if len(service.data_field) > 1:
+            for index in range(1, len(service.data_field)):
+                result_data = result_data[service.data_field[index]]
+    except (KeyError, IndexError):
+         logging.error(f'Could not get data from {json} user field {service.name}')
     return result_data
