@@ -10,7 +10,7 @@ from config import logging
 class Service:
     name: str
     url: str
-    data_field: list
+    data_field: str
 
 
 async def fetch(session: ClientSession, url: str) -> dict:
@@ -36,10 +36,7 @@ async def fetch_data(service: Service) -> str:
         return 'error'
 
     try:
-        result_data = json[service.data_field[0]]
-        if len(service.data_field) > 1:
-            for index in range(1, len(service.data_field)):
-                result_data = result_data[service.data_field[index]]
-    except (KeyError, IndexError):
+        result_data = json[service.data_field]
+    except KeyError:
          logging.error(f'Could not get data from {json} user field {service.name}')
     return result_data

@@ -8,6 +8,8 @@ from aiogram.types import ContentTypes, \
 from aiogram.utils.exceptions import TelegramAPIError, MessageNotModified
 from config import TOKEN, logging
 
+from weather.weather_api import fetch_weather_from_weather_api
+
 
 bot = Bot(TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
@@ -21,11 +23,14 @@ def is_reply(message: types.Message):
 
 @dp.message_handler(commands=('start', 'help'))
 async def command_start(message: types.Message):
-    text = 'Hello'
-    if message.text.startswith('/help'):
-        text += ' help'
-    text += '!'
+    text = 'Вызвать команды /key'
     await message.reply(text)
+
+
+@dp.callback_query_handler(text='weather')
+async def command_weather(callback_query: types.CallbackQuery):
+    result = await fetch_weather_from_weather_api()
+    await callback_query.message.reply(result)
 
 
 @dp.message_handler(commands='key')
@@ -34,8 +39,9 @@ async def send_inline_keyboard(message: types.Message):
     kb.add(*(InlineKeyboardButton(text, callback_data=text.lower()) for text in ('YES','NO')))
     url_btn = InlineKeyboardButton('NOTES', url='https://ya.ru')
     remove_btn = InlineKeyboardButton('remove kb', callback_data='remove')
-    kb.add(remove_btn, url_btn)
-    await message.reply('Buttons here:', reply_markup=kb)
+    weather_btn = InlineKeyboardButton('weather', callback_data='weather')
+    kb.add(remove_btn, url_btn, weather_btn)
+    await message.reply('Выбери команду:', reply_markup=kb)
 
 
 @dp.message_handler(is_reply)
