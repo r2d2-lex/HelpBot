@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import asyncio
 import sys
 sys.path.append("..")
@@ -11,15 +12,27 @@ service = Service(
         'current'
 )
 
+weather_dict = OrderedDict(
+    temp_c=dict(param='temp_c', description='Температура воздуха', sign='°C'),
+    feels_like_c=dict(param='feelslike_c', description='Ощущается как', sign='°C'),
+    wind_kph=dict(param='wind_kph', description='Скорость ветра', sign='Км/ч'),
+    last_updated=dict(param='last_updated', description='Данные получены'),
+)
+
 
 async def fetch_weather_from_weather_api() -> str:
     weather = 'Ошибка получение результата'
     result_dict = await fetch_data(service)
+    logging.info(result_dict)
     try:
-        weather = result_dict['temp_c']
-    except KeyError:
-        pass
-    weather = f'Температура воздуха в {CITY}: {weather} °C'
+        weather_string = ''
+        for key, value in weather_dict.items():
+            param_value = result_dict[value['param']]
+            param_value = str(param_value)
+            weather_string += value['description'] + ': ' + param_value + ' ' + value.get('sign', '') + '\r\n'
+        weather = weather_string
+    except (KeyError, TypeError) as error:
+        logging.error(f'Ошибка получения данных: {error}')
     return weather
 
 
