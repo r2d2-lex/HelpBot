@@ -12,6 +12,7 @@ weather_api_dict = OrderedDict(
     feels_like=dict(param=('main', 'feels_like'), description='Ощущается как', sign='°C'),
     pressure=dict(param=('main', 'pressure'), description='Давление',),
     wind_speed=dict(param=('wind', 'speed'), description='Скорость ветра', sign='М/с'),
+    weather_state=dict(param=('weather', 0, 'description'), description='Состояние за окном',),
 )
 
 service_open_weather = Service(
