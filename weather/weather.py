@@ -6,7 +6,7 @@ async def fetch_weather_from_service(service: Service) -> str:
     weather = 'Ошибка получение результата'
     weather_params_dict = service.params
     result_dict = await fetch_data(service)
-    logging.debug(result_dict)
+    logging.info(result_dict)
     try:
         weather_string = ''
         for key, value in weather_params_dict.items():
