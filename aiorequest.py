@@ -11,6 +11,7 @@ class Service:
     name: str
     url: str
     data_field: str
+    params: dict
 
 
 async def fetch(session: ClientSession, url: str) -> dict:
