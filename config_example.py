@@ -8,3 +8,5 @@ logging.basicConfig(
 )
 CITY = 'Moscow'
 WEATHER_API_KEY = 'key'
+OPEN_WEATHER_KEY = 'key'
+LANG = 'ru'
