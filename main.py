@@ -5,7 +5,9 @@ from aiogram.types import ContentTypes, InlineKeyboardMarkup, InlineKeyboardButt
 from aiogram.utils.exceptions import BadRequest, MessageNotModified
 from config import TOKEN, logging
 
-from weather.weather_api import fetch_weather_from_weather_api
+from weather.weather import fetch_weather_from_service
+from weather.weather_api import service_weather_api
+from weather.open_weather import service_open_weather
 
 
 bot = Bot(TOKEN)
@@ -19,9 +21,15 @@ async def command_start(message: types.Message):
     await message.reply(text)
 
 
-@dp.callback_query_handler(text='weather')
+@dp.callback_query_handler(text='weather_api')
 async def command_weather(callback_query: types.CallbackQuery):
-    result = await fetch_weather_from_weather_api()
+    result = await fetch_weather_from_service(service_weather_api)
+    await callback_query.message.reply(result, reply=False)
+
+
+@dp.callback_query_handler(text='open_weather')
+async def command_weather(callback_query: types.CallbackQuery):
+    result = await fetch_weather_from_service(service_open_weather)
     await callback_query.message.reply(result, reply=False)
 
 
@@ -30,8 +38,9 @@ async def send_inline_keyboard(message: types.Message):
     kb = InlineKeyboardMarkup()
     url_btn = InlineKeyboardButton('Yandex', url='https://ya.ru')
     remove_btn = InlineKeyboardButton('Удалить кнопки', callback_data='remove')
-    weather_btn = InlineKeyboardButton('weatherapi', callback_data='weather')
-    kb.add(url_btn, weather_btn, remove_btn)
+    weather_api_btn = InlineKeyboardButton('weatherapi', callback_data='weather_api')
+    open_weather_btn = InlineKeyboardButton('openweather', callback_data='open_weather')
+    kb.add(url_btn, weather_api_btn, open_weather_btn, remove_btn)
     await message.reply('Выбери команду:', reply_markup=kb)
 
 

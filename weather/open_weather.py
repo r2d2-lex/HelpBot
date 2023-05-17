@@ -3,7 +3,6 @@ import asyncio
 import sys
 sys.path.append("..")
 from aiorequest import Service
-from weather import fetch_weather_from_service
 from config import logging, OPEN_WEATHER_KEY, CITY, LANG
 
 CALLBACK = ''
@@ -24,6 +23,7 @@ service_open_weather = Service(
 
 
 def main():
+    from weather import fetch_weather_from_service
     loop = asyncio.get_event_loop()
     result = loop.run_until_complete(fetch_weather_from_service(service_open_weather))
     loop.close()
