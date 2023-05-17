@@ -2,7 +2,7 @@ from collections import OrderedDict
 import asyncio
 import sys
 sys.path.append("..")
-from aiorequest import Service
+from aiorequest import Service, parse_data_from_service
 from config import logging, OPEN_WEATHER_KEY, CITY, LANG
 
 CALLBACK = ''
@@ -16,17 +16,22 @@ weather_api_dict = OrderedDict(
 )
 
 service_open_weather = Service(
-    'weatherapi.com',
+    'openweathermap.org',
     f'https://api.openweathermap.org/data/2.5/weather?q={CITY}&units=metric&lang={LANG}&appid={OPEN_WEATHER_KEY}',
     CALLBACK,
     weather_api_dict,
 )
 
 
+async def get_weather_from_open_weather():
+    result_str = f'Сервис: {service_open_weather.name}\r\nПолучение информации о погоде в {CITY}:\r\n'
+    result_str += await parse_data_from_service(service_open_weather)
+    return result_str
+
+
 def main():
-    from weather import fetch_weather_from_service
     loop = asyncio.get_event_loop()
-    result = loop.run_until_complete(fetch_weather_from_service(service_open_weather))
+    result = loop.run_until_complete(get_weather_from_open_weather())
     loop.close()
     print(result)
 

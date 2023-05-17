@@ -44,3 +44,29 @@ async def fetch_data(service: Service) -> str:
     except KeyError:
          logging.error(f'Could not get data from {json} user field {service.name}')
     return result_data
+
+
+async def parse_data_from_service(service: Service) -> str:
+    result_data = 'Ошибка обработки данных'
+    weather_params_dict = service.params
+    result_dict = await fetch_data(service)
+    logging.info(result_dict)
+    try:
+        result_string = ''
+        for key, value in weather_params_dict.items():
+
+            params_value = value['param']
+            first = True
+            save_data = result_dict[params_value[0]]
+            for param in params_value:
+                if first:
+                    first = False
+                else:
+                    save_data = save_data[param]
+            save_data = str(save_data)
+
+            result_string += value['description'] + ': ' + save_data + ' ' + value.get('sign', '') + '\r\n'
+        result_data = result_string
+    except (KeyError, TypeError, IndexError) as error:
+        logging.error(f'Ошибка обработки данных: {error}')
+    return result_data

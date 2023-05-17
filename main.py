@@ -5,9 +5,8 @@ from aiogram.types import ContentTypes, InlineKeyboardMarkup, InlineKeyboardButt
 from aiogram.utils.exceptions import BadRequest, MessageNotModified
 from config import TOKEN, logging
 
-from weather.weather import fetch_weather_from_service
-from weather.weather_api import service_weather_api
-from weather.open_weather import service_open_weather
+from weather.weather_api import get_weather_from_weather_api
+from weather.open_weather import get_weather_from_open_weather
 
 
 bot = Bot(TOKEN)
@@ -23,13 +22,13 @@ async def command_start(message: types.Message):
 
 @dp.callback_query_handler(text='weather_api')
 async def command_weather(callback_query: types.CallbackQuery):
-    result = await fetch_weather_from_service(service_weather_api)
+    result = await get_weather_from_weather_api()
     await callback_query.message.reply(result, reply=False)
 
 
 @dp.callback_query_handler(text='open_weather')
 async def command_weather(callback_query: types.CallbackQuery):
-    result = await fetch_weather_from_service(service_open_weather)
+    result = await get_weather_from_open_weather()
     await callback_query.message.reply(result, reply=False)
 
 

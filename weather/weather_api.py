@@ -2,7 +2,7 @@ from collections import OrderedDict
 import asyncio
 import sys
 sys.path.append("..")
-from aiorequest import Service
+from aiorequest import Service, parse_data_from_service
 from config import logging, WEATHER_API_KEY, CITY
 
 
@@ -21,10 +21,15 @@ service_weather_api = Service(
 )
 
 
+async def get_weather_from_weather_api():
+    result_str = f'Сервис: {service_weather_api.name}\r\nПолучение информации о погоде в {CITY}:\r\n'
+    result_str += await parse_data_from_service(service_weather_api)
+    return result_str
+
+
 def main():
-    from weather import fetch_weather_from_service
     loop = asyncio.get_event_loop()
-    result = loop.run_until_complete(fetch_weather_from_service(service_weather_api))
+    result = loop.run_until_complete(get_weather_from_weather_api())
     loop.close()
     print(result)
 
