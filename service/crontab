@@ -1,0 +1,2 @@
+30  8   *   *   *  root /usr/bin/systemctl stop helpbot.service
+30  17   *   *   *  root  /usr/bin/systemctl restart helpbot.service
