@@ -8,10 +8,10 @@ from config import logging, WEATHER_API_KEY, CITY
 
 
 weather_api_dict = OrderedDict(
-    temp_c=dict(param='temp_c', description='Температура воздуха', sign='°C'),
-    feels_like_c=dict(param='feelslike_c', description='Ощущается как', sign='°C'),
-    wind_kph=dict(param='wind_kph', description='Скорость ветра', sign='Км/ч'),
-    last_updated=dict(param='last_updated', description='Данные получены'),
+    temp_c=dict(param=('temp_c',), description='Температура воздуха', sign='°C'),
+    feels_like_c=dict(param=('feelslike_c',), description='Ощущается как', sign='°C'),
+    wind_kph=dict(param=('wind_kph',), description='Скорость ветра', sign='Км/ч'),
+    last_updated=dict(param=('last_updated',), description='Данные получены'),
 )
 
 service_weather_api = Service(

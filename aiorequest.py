@@ -37,7 +37,10 @@ async def fetch_data(service: Service) -> str:
         return 'error'
 
     try:
-        result_data = json[service.data_field]
+        if service.data_field:
+            result_data = json[service.data_field]
+        else:
+            result_data = json
     except KeyError:
          logging.error(f'Could not get data from {json} user field {service.name}')
     return result_data

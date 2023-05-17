@@ -6,12 +6,13 @@ from aiorequest import Service
 from weather import fetch_weather_from_service
 from config import logging, OPEN_WEATHER_KEY, CITY, LANG
 
-CALLBACK = 'main'
+CALLBACK = ''
 
 weather_api_dict = OrderedDict(
-    temp=dict(param='temp', description='Температура воздуха', sign='°C'),
-    feels_like=dict(param='feels_like', description='Ощущается как', sign='°C'),
-    pressure=dict(param='pressure', description='Давление',),
+    temp=dict(param=('main', 'temp'), description='Температура воздуха', sign='°C'),
+    feels_like=dict(param=('main', 'feels_like'), description='Ощущается как', sign='°C'),
+    pressure=dict(param=('main', 'pressure'), description='Давление',),
+    wind_speed=dict(param=('wind', 'speed'), description='Скорость ветра', sign='М/с'),
 )
 
 service_open_weather = Service(
