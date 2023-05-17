@@ -5,8 +5,8 @@ After=network.target
 [Service]
 User=www-data
 Group=www-data
-WorkingDirectory=/scripts/helpbot/
-ExecStart=/usr/bin/env bash -c 'cd /scripts/helpbot/ && source /scripts/helpbot/venv/bin/activate && /scripts/helpbot/venv/bin/python /scripts/helpbot/main.py > /dev/null 2>&1'
+WorkingDirectory=/scripts/HelpBot/
+ExecStart=/usr/bin/env bash -c 'cd /scripts/HelpBot/ && source /scripts/HelpBot/venv/bin/activate && /scripts/HelpBot/venv/bin/python /scripts/HelpBot/main.py > /dev/null 2>&1'
 
 [Install]
 WantedBy=multi-user.target
