@@ -4,6 +4,7 @@ from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from aiogram.types import ContentTypes, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.exceptions import BadRequest, MessageNotModified
 from config import TOKEN, logging
+from utils import get_keyboard
 
 from weather.weather_api import get_weather_from_weather_api
 from weather.open_weather import get_weather_from_open_weather
@@ -17,30 +18,24 @@ dp.middleware.setup(LoggingMiddleware())
 @dp.message_handler(commands=('start', 'help'))
 async def command_start(message: types.Message):
     text = 'Меню функций: /key'
-    await message.reply(text)
+    await message.reply(text, reply_markup=get_keyboard())
 
 
 @dp.callback_query_handler(text='weather_api')
 async def command_weather(callback_query: types.CallbackQuery):
     result = await get_weather_from_weather_api()
-    await callback_query.message.reply(result, reply=False)
+    await callback_query.message.reply(result, reply_markup=get_keyboard())
 
 
 @dp.callback_query_handler(text='open_weather')
 async def command_weather(callback_query: types.CallbackQuery):
     result = await get_weather_from_open_weather()
-    await callback_query.message.reply(result, reply=False)
+    await callback_query.message.reply(result, reply_markup=get_keyboard())
 
 
 @dp.message_handler(commands='key')
 async def send_inline_keyboard(message: types.Message):
-    kb = InlineKeyboardMarkup()
-    url_btn = InlineKeyboardButton('Yandex', url='https://ya.ru')
-    remove_btn = InlineKeyboardButton('Удалить кнопки', callback_data='remove')
-    weather_api_btn = InlineKeyboardButton('weatherapi', callback_data='weather_api')
-    open_weather_btn = InlineKeyboardButton('openweather', callback_data='open_weather')
-    kb.add(url_btn, weather_api_btn, open_weather_btn, remove_btn)
-    await message.reply('Выбери команду:', reply_markup=kb)
+    await message.reply('Выбери команду:', reply_markup=get_keyboard())
 
 
 @dp.callback_query_handler(text='remove')
