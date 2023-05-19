@@ -9,7 +9,7 @@ from utils import get_keyboard
 from weather.weather_api import get_weather_from_weather_api
 from weather.open_weather import get_weather_from_open_weather
 
-from search_image.google_search_image import google_search_image
+from search_image.google_search_image import google_search_image, google_next_search, google_new_search
 
 
 bot = Bot(TOKEN)
@@ -29,13 +29,25 @@ async def command_weather(callback_query: types.CallbackQuery):
     await callback_query.message.reply(result, reply_markup=get_keyboard())
 
 
+@dp.message_handler(commands='img_next')
+async def search_image_next(message: types.Message):
+    google_next_search()
+    await send_image(message)
+    await message.reply('Следующие сообщения', reply_markup=get_keyboard())
+
+
 @dp.message_handler(commands='img')
 async def search_image(message: types.Message):
+    google_new_search()
+    await send_image(message)
+    await message.reply('Загрузить ещё? /img_next:', reply_markup=get_keyboard())
+
+
+async def send_image(message: types.Message):
     arguments = message.get_args()
     logging.debug(f'Аргументы: {arguments}')
-    for image in google_search_image(arguments, 3):
+    for image in google_search_image(arguments, 5):
         await bot.send_photo(chat_id=message.chat.id, photo=image)
-    await message.reply('Выбери команду:', reply_markup=get_keyboard())
 
 
 @dp.callback_query_handler(text='open_weather')
