@@ -1,29 +1,29 @@
 from google_images_search import GoogleImagesSearch
 from io import BytesIO
+from services import UserState, users_context
 from config import GOOGLE_SEARCH_IMAGE_API, GOOGLE_SEARCH_IMAGE_CX, logging
 
 QUERY_FIELD = 'q'
 NUM_FIELD = 'num'
 PAGE_COUNT_IMAGES = 10
 
-user_context = dict(
-    search_continue=False,
-    search_context=None,
-)
+
+def google_next_search(userid: int):
+    user_state = users_context.get(userid)
+    user_state.search_continue = True
+    users_context.update({userid: user_state})
 
 
-def google_next_search():
-    user_context['search_continue'] = True
+def google_new_search(userid: int):
+    user_state = UserState(user_id=userid, search_context=None, search_continue=False)
+    users_context.update({userid: user_state})
 
 
-def google_new_search():
-    user_context['search_continue'] = False
-
-
-def google_search_image(query: str, num_images=PAGE_COUNT_IMAGES):
-    if user_context.get('search_continue', False):
+def google_search_image(query: str, userid: int, num_images=PAGE_COUNT_IMAGES):
+    user_state = users_context.get(userid)
+    if user_state.search_continue:
         logging.info('Next search pages...')
-        gis = user_context.get('search_context', None)
+        gis = user_state.search_context
         gis.next_page()
     else:
         logging.info(f'New search with {query}...')
@@ -32,7 +32,7 @@ def google_search_image(query: str, num_images=PAGE_COUNT_IMAGES):
             QUERY_FIELD: query,
             NUM_FIELD: num_images
         })
-        user_context['search_context'] = gis
+        users_context.update({userid: UserState(user_id=userid, search_continue=False, search_context=gis)})
 
     for image in gis.results():
         my_bytes_io = BytesIO()

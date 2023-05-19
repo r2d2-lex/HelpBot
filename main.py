@@ -31,22 +31,22 @@ async def command_weather(callback_query: types.CallbackQuery):
 
 @dp.message_handler(commands='img_next')
 async def search_image_next(message: types.Message):
-    google_next_search()
+    google_next_search(message.from_user.id)
     await send_image(message)
     await message.reply('Следующие сообщения', reply_markup=get_keyboard())
 
 
 @dp.message_handler(commands='img')
 async def search_image(message: types.Message):
-    google_new_search()
+    google_new_search(message.from_user.id)
     await send_image(message)
     await message.reply('Загрузить ещё? /img_next:', reply_markup=get_keyboard())
 
 
 async def send_image(message: types.Message):
-    arguments = message.get_args()
-    logging.debug(f'Аргументы: {arguments}')
-    for image in google_search_image(arguments, 5):
+    search_arg = message.get_args()
+    logging.debug(f'Аргументы: {search_arg}')
+    for image in google_search_image(search_arg, message.from_user.id, 5):
         await bot.send_photo(chat_id=message.chat.id, photo=image)
 
 
