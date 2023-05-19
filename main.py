@@ -27,6 +27,7 @@ async def command_start(message: types.Message):
 async def command_weather(callback_query: types.CallbackQuery):
     result = await get_weather_from_weather_api()
     await callback_query.message.reply(result, reply_markup=get_keyboard())
+    await callback_query.answer()
 
 
 @dp.message_handler(commands='img_next')
@@ -54,6 +55,7 @@ async def send_image(message: types.Message):
 async def command_weather(callback_query: types.CallbackQuery):
     result = await get_weather_from_open_weather()
     await callback_query.message.reply(result, reply_markup=get_keyboard())
+    await callback_query.answer()
 
 
 @dp.message_handler(commands='key')
