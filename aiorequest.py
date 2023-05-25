@@ -16,7 +16,7 @@ class Service:
 
 async def fetch(session: ClientSession, url: str) -> dict:
     async with session.get(url) as response:
-        return await response.json()
+        return await response.json(content_type=None)
 
 
 async def fetch_data(service: Service) -> str:

@@ -8,6 +8,7 @@ from utils import get_keyboard
 
 from weather.weather_api import get_weather_from_weather_api
 from weather.open_weather import get_weather_from_open_weather
+from erates.cbr_xml_daily import get_exchange_rates
 
 from search_image.google_search_image import google_search_image, google_next_search, google_new_search
 
@@ -54,6 +55,13 @@ async def send_image(message: types.Message):
 @dp.callback_query_handler(text='open_weather')
 async def command_weather(callback_query: types.CallbackQuery):
     result = await get_weather_from_open_weather()
+    await callback_query.message.reply(result, reply_markup=get_keyboard())
+    await callback_query.answer()
+
+
+@dp.callback_query_handler(text='exchange_rates')
+async def exchange_rates(callback_query: types.CallbackQuery):
+    result = await get_exchange_rates()
     await callback_query.message.reply(result, reply_markup=get_keyboard())
     await callback_query.answer()
 
