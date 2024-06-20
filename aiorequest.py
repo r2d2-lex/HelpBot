@@ -14,6 +14,11 @@ class Service:
     params: dict
 
 
+async def fetch_text(url: str) -> str:
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            return await response.text()
+
 async def fetch(session: ClientSession, url: str) -> dict:
     async with session.get(url) as response:
         return await response.json(content_type=None)
