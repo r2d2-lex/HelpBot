@@ -10,5 +10,5 @@ class News(Base):
     title = Column(String)
     url = Column(String)
     content = Column(String)
+    published = Column(Date)
     image = Column(LargeBinary)
-    # published = Column(Date)
