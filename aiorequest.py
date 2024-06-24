@@ -19,7 +19,7 @@ async def fetch_text(url: str) -> str:
         async with session.get(url) as response:
             return await response.text()
 
-async def fetch(session: ClientSession, url: str) -> dict:
+async def fetch_json(session: ClientSession, url: str) -> dict:
     async with session.get(url) as response:
         return await response.json(content_type=None)
 
@@ -30,7 +30,7 @@ async def fetch_data(service: Service) -> str:
     start = time()
     try:
         async with aiohttp.ClientSession() as session:
-            json = await fetch(session, service.url)
+            json = await fetch_json(session, service.url)
             end = time()
             logging.info(f'Got answer from {service.name} after {end-start}')
 
