@@ -3,6 +3,6 @@ aiohttp==3.8.4
 Google-Images-Search==1.4.6
 Pillow==9.5.0
 beautifulsoup4==4.12.3
-psycopg2==2.9.9
 SQLAlchemy==2.0.31
 pydantic==2.7.4
+asyncpg==0.29.0

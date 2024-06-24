@@ -1,4 +1,3 @@
-import datetime
 import logging
 from bs4 import BeautifulSoup
 import asyncio
@@ -6,13 +5,10 @@ import sys
 sys.path.append("..")
 from aiorequest import fetch_text
 from schema.habr import HabrArt
+from utils import get_date_time
 
 HABR_NEWS_URL = 'https://habr.com/ru/hubs/python/articles/'
 HABR_ROOT_URL = 'https://habr.com'
-
-
-def get_date_time(template):
-    return datetime.datetime.now(tz=datetime.timezone.utc).strftime(template)
 
 
 async def get_habr_news():

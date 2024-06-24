@@ -1,47 +1,25 @@
-from sqlalchemy import create_engine
+from typing import AsyncGenerator
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.exc import OperationalError
 from models.habr import News
+import asyncio
 import config
 import logging
 
-engine = create_engine(config.POSTGRES_DATABASE_URI)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+engine = create_async_engine(config.POSTGRES_DATABASE_URI, pool_size=70, max_overflow=0)
+async_session_maker = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    async with async_session_maker() as session:
+        yield session
 
-class Database:
-    def __init__(self):
-        self.connection = None
-        self.engine = create_engine(config.POSTGRES_DATABASE_URI)
-
-    def __enter__(self):
-        try:
-            self.connection = self.engine.connect()
-        except OperationalError:
-            logging.error(f'database "{config.BOT_DB}" does not exist')
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.connection is not None:
-            self.connection.close()
-            logging.info(f'Database "{config.BOT_DB}" connection closed!')
-
-    def create_db(self):
-        News.metadata.create_all(bind=self.engine)
-        return
-
-def create_tables():
-    with Database() as db:
-        db.create_db()
+async def async_main() -> None:
+    async with engine.begin() as conn:
+        await conn.run_sync(News.metadata.drop_all)
+        await conn.run_sync(News.metadata.create_all)
 
 def main():
-    create_tables()
+    asyncio.run(async_main())
 
 if __name__ == '__main__':
     main()
