@@ -2,6 +2,8 @@ import logging
 from bs4 import BeautifulSoup
 import asyncio
 import sys
+from crud import create_news
+from db import get_db
 sys.path.append("..")
 from aiorequest import fetch_text
 from schema.habr import HabrArt
@@ -14,10 +16,13 @@ HABR_ROOT_URL = 'https://habr.com'
 async def get_habr_news():
     return await fetch_text(HABR_NEWS_URL)
 
-def main():
-    # loop = asyncio.get_event_loop()
-    # result = loop.run_until_complete(get_habr_news())
-    # loop.close()
+async def write_db(news):
+    db = get_db()
+    db_ = await db.__anext__()
+    await create_news(db_, news)
+
+
+async def main():
     with open('example.html', 'r') as file_descr:
         result = file_descr.read()
 
@@ -41,10 +46,11 @@ def main():
                   f'{news.published}\r\n'
                   )
             print('\r\n')
+            await write_db(news)
         except AttributeError as err:
             logging.info(f'{err}')
             continue
 
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())
