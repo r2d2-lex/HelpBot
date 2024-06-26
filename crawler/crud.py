@@ -24,7 +24,7 @@ async def create_news(db: AsyncSession, item: SchemaHabrArt):
         url = item.url,
         content = item.content,
         published = item.published,
-        image = item.image,
+        image_url = item.image_url,
     )
     db.add(db_item)
     await db.commit()

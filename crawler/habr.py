@@ -16,14 +16,12 @@ HABR_ROOT_URL = 'https://habr.com'
 async def get_habr_news():
     return await fetch_text(HABR_NEWS_URL)
 
-
 def depends(func):
     async def wrapped(*args, **kwargs):
         db = get_db()
         db_ = await db.__anext__()
         return await func(db_, *args, **kwargs)
     return wrapped
-
 
 def print_news(news: HabrArt):
     print(f'{news.news_id}\r\n'
@@ -33,16 +31,13 @@ def print_news(news: HabrArt):
           f'{news.published}\r\n'
           )
 
-
 @depends
 async def write_news_in_db(db_session, news):
     await create_news(db_session, news)
 
-
 @depends
 async def read_news_from_db(db_session):
     return await read_news(db_session)
-
 
 async def parse_article(data)-> list:
     soup = BeautifulSoup(data, 'html.parser')
@@ -51,13 +46,16 @@ async def parse_article(data)-> list:
 
     for article in articles:
         try:
+            # image_url = article.find(class_='tm-article-snippet__cover_cover tm-article-snippet__cover').find('img')['src']
+            # image_content = await fetch_file(image_url)
             news = HabrArt(
                 news_id = article['id'],
                 title = article.find(class_='tm-title tm-title_h2').text,
                 url = HABR_ROOT_URL + article.find(class_='tm-title__link')['href'],
                 content =  article.find(class_='article-formatted-body article-formatted-body article-formatted-body_version-2').find('p').text,
                 published = get_date_time('%Y-%m-%d %H:%M:%S'),
-                image = bytearray()
+                image_url = article.find(class_='tm-article-snippet__cover_cover tm-article-snippet__cover').find('img')['src']
+                # image = image_content if image_content else bytes()
             )
             print_news(news)
             result.append(news)
@@ -67,14 +65,17 @@ async def parse_article(data)-> list:
             continue
     return result
 
+async def habr_news():
+    news = await read_news_from_db()
+    return news
+
 
 async def main():
     with open('example.html', 'r') as file_descr:
         result = file_descr.read()
         news = await parse_article(result)
-        if news:
-            for news_item in news:
-                await write_news_in_db(news_item)
+        for news_item in news:
+            await write_news_in_db(news_item)
 
     # news = await read_news_from_db()
     # for news_item in news:

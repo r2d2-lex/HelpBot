@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Date, Integer, String, LargeBinary
+from sqlalchemy import Column, DateTime, Integer, String, LargeBinary
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
@@ -10,5 +10,5 @@ class News(Base):
     title = Column(String)
     url = Column(String)
     content = Column(String)
-    published = Column(Date)
-    image = Column(LargeBinary)
+    published = Column(DateTime)
+    image_url = Column(String)

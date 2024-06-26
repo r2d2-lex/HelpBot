@@ -13,6 +13,11 @@ class Service:
     data_field: str
     params: dict
 
+# async def fetch_file(url: str):
+#     async with aiohttp.ClientSession() as session:
+#         async with session.get(url) as response:
+#             if response.status == 200:
+#                 return await response.read()
 
 async def fetch_text(url: str) -> str:
     async with aiohttp.ClientSession() as session:

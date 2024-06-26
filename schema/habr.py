@@ -9,7 +9,7 @@ class HabrArt(BaseModel):
     url: str = ''
     content: str = ''
     published: datetime = None
-    image: bytes = ''
+    image_url: str = ''
 
     class Config:
         from_attributes = True

@@ -9,7 +9,10 @@ def get_keyboard():
     weather_api_btn = InlineKeyboardButton('weatherapi', callback_data='weather_api')
     open_weather_btn = InlineKeyboardButton('openweather', callback_data='open_weather')
     exchange_rates_btn = InlineKeyboardButton('Курсы валют', callback_data='exchange_rates')
-    kb.add(url_btn, weather_api_btn, open_weather_btn, exchange_rates_btn, remove_btn)
+    news_btn = InlineKeyboardButton('Habr новости', callback_data='habr_news')
+    kb.add(url_btn, weather_api_btn, open_weather_btn, exchange_rates_btn, remove_btn,
+           news_btn,
+           )
     return kb
 
 def get_date_time(template):
