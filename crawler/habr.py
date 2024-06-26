@@ -16,12 +16,14 @@ HABR_ROOT_URL = 'https://habr.com'
 async def get_habr_news():
     return await fetch_text(HABR_NEWS_URL)
 
+
 def depends(func):
     async def wrapped(*args, **kwargs):
         db = get_db()
         db_ = await db.__anext__()
         return await func(db_, *args, **kwargs)
     return wrapped
+
 
 def print_news(news: HabrArt):
     print(f'{news.news_id}\r\n'
@@ -31,17 +33,21 @@ def print_news(news: HabrArt):
           f'{news.published}\r\n'
           )
 
+
 @depends
 async def write_news_in_db(db_session, news):
     await create_news(db_session, news)
+
 
 @depends
 async def read_news_from_db(db_session):
     return await read_news(db_session)
 
-async def parse_article(data):
+
+async def parse_article(data)-> list:
     soup = BeautifulSoup(data, 'html.parser')
     articles = soup.findAll(class_='tm-articles-list__item')
+    result = []
 
     for article in articles:
         try:
@@ -54,19 +60,25 @@ async def parse_article(data):
                 image = bytearray()
             )
             print_news(news)
-            await write_news_in_db(news)
+            result.append(news)
+
         except AttributeError as err:
             logging.info(f'{err}')
             continue
+    return result
 
 
 async def main():
-    # with open('example.html', 'r') as file_descr:
-    #     result = file_descr.read()
-    #     await parse_article(result)
-    news = await read_news_from_db()
-    for news_item in news:
-        print_news(news_item)
+    with open('example.html', 'r') as file_descr:
+        result = file_descr.read()
+        news = await parse_article(result)
+        if news:
+            for news_item in news:
+                await write_news_in_db(news_item)
+
+    # news = await read_news_from_db()
+    # for news_item in news:
+    #     print_news(news_item)
 
 
 if __name__ == '__main__':
