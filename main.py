@@ -1,3 +1,5 @@
+from time import sleep
+
 from aiogram import Bot, Dispatcher, types, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
@@ -6,6 +8,7 @@ from aiogram.utils.exceptions import BadRequest, MessageNotModified
 from config import TOKEN, logging
 from utils import get_keyboard
 
+from crawler.habr import read_news_from_db
 from weather.weather_api import get_weather_from_weather_api
 from weather.open_weather import get_weather_from_open_weather
 from erates.cbr_xml_daily import get_exchange_rates
@@ -28,6 +31,18 @@ async def command_start(message: types.Message):
 async def command_weather(callback_query: types.CallbackQuery):
     result = await get_weather_from_weather_api()
     await callback_query.message.reply(result, reply_markup=get_keyboard())
+    await callback_query.answer()
+
+@dp.callback_query_handler(text='habr_news')
+async def get_habr_news(callback_query: types.CallbackQuery):
+    result = await read_news_from_db()
+    for article_item in result:
+        message = (f'{article_item.title}\r\n\r\n'
+                   f'{article_item.content}\r\n')
+        await callback_query.message.answer(message)
+        sleep(0.2)
+
+    await callback_query.message.answer('/next_news', reply_markup=get_keyboard())
     await callback_query.answer()
 
 

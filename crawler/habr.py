@@ -2,7 +2,7 @@ import logging
 from bs4 import BeautifulSoup
 import asyncio
 import sys
-from crud import create_news, read_news
+from .crud import create_news, read_news
 from db import get_db
 sys.path.append("..")
 from aiorequest import fetch_text
@@ -64,11 +64,6 @@ async def parse_article(data)-> list:
             logging.info(f'{err}')
             continue
     return result
-
-async def habr_news():
-    news = await read_news_from_db()
-    return news
-
 
 async def main():
     with open('example.html', 'r') as file_descr:
