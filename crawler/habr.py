@@ -1,10 +1,11 @@
 import logging
 from bs4 import BeautifulSoup
 import asyncio
+import datetime
 import sys
 sys.path.append("..")
 from db import get_db
-from crawler.crud import create_news, read_news, get_one_news
+from crawler.crud import create_news, read_news, get_one_news, delete_one_news
 
 from aiorequest import fetch_text
 from schema.habr import HabrArt
@@ -37,8 +38,12 @@ async def write_news_in_db(db_session, news):
     await create_news(db_session, news)
 
 @depends_db
-async def read_news_from_db(db_session):
-    return await read_news(db_session)
+async def read_news_from_db(db_session, limit):
+    return await read_news(db_session, limit)
+
+@depends_db
+async def delete_news_from_db(db_session, date):
+    return await delete_one_news(db_session, date)
 
 @depends_db
 async def read_one_news_from_db(db_session, news_id):
@@ -85,14 +90,19 @@ async def news_update():
                 await write_news_in_db(news_item)
 
 
-async def news_read(count=10):
-    news = await read_news_from_db()
+async def news_read(count=15):
+    news = await read_news_from_db(count)
     for news_item in news:
         print_news(news_item)
 
 
+async def delete_old_news():
+    too_old = datetime.datetime.today() - datetime.timedelta(days=14)
+    await delete_news_from_db(too_old)
+
 async def main():
-    await news_update()
+    # await news_update()
+    await delete_old_news()
 
 if __name__ == '__main__':
     asyncio.run(main())

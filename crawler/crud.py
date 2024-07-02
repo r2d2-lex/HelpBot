@@ -1,8 +1,9 @@
 import logging
+from datetime import datetime
 from typing import Union
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
+from sqlalchemy import select, update, delete
 
 import sys
 sys.path.append("..")
@@ -10,13 +11,20 @@ from models.habr import News as ModelNews
 from schema.habr import HabrArt as SchemaHabrArt
 
 
+async def delete_one_news(db:AsyncSession, date: datetime):
+    db_item = delete(ModelNews).where(ModelNews.published <= date)
+    result = await db.execute(db_item)
+    logging.info(f'Total rows deleted: {result.rowcount}')
+    await db.commit()
+
+
 async def get_one_news(db:AsyncSession, news_id: int) -> Union[ModelNews, None]:
     return await db.get(ModelNews, news_id)
 
 
-async def read_news(db:AsyncSession) -> list[SchemaHabrArt]:
+async def read_news(db:AsyncSession, limit: int) -> list[SchemaHabrArt]:
     logging.info('Read news from db...')
-    query = select(ModelNews)
+    query = select(ModelNews).limit(limit).order_by(ModelNews.news_id.desc())
     result = await db.execute(query)
     return list(result.scalars().all())
 
