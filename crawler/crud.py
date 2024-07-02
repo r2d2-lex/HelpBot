@@ -1,4 +1,5 @@
 import logging
+from typing import Union
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
@@ -7,6 +8,10 @@ import sys
 sys.path.append("..")
 from models.habr import News as ModelNews
 from schema.habr import HabrArt as SchemaHabrArt
+
+
+async def get_one_news(db:AsyncSession, news_id: int) -> Union[ModelNews, None]:
+    return await db.get(ModelNews, news_id)
 
 
 async def read_news(db:AsyncSession) -> list[SchemaHabrArt]:

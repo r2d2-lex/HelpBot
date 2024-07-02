@@ -2,9 +2,10 @@ import logging
 from bs4 import BeautifulSoup
 import asyncio
 import sys
-from .crud import create_news, read_news
-from db import get_db
 sys.path.append("..")
+from db import get_db
+from crawler.crud import create_news, read_news, get_one_news
+
 from aiorequest import fetch_text
 from schema.habr import HabrArt
 from utils import get_date_time
@@ -16,7 +17,7 @@ HABR_ROOT_URL = 'https://habr.com'
 async def get_habr_news():
     return await fetch_text(HABR_NEWS_URL)
 
-def depends(func):
+def depends_db(func):
     async def wrapped(*args, **kwargs):
         db = get_db()
         db_ = await db.__anext__()
@@ -31,13 +32,17 @@ def print_news(news: HabrArt):
           f'{news.published}\r\n'
           )
 
-@depends
+@depends_db
 async def write_news_in_db(db_session, news):
     await create_news(db_session, news)
 
-@depends
+@depends_db
 async def read_news_from_db(db_session):
     return await read_news(db_session)
+
+@depends_db
+async def read_one_news_from_db(db_session, news_id):
+    return await get_one_news(db_session, news_id)
 
 async def parse_article(data)-> list:
     soup = BeautifulSoup(data, 'html.parser')
@@ -65,17 +70,29 @@ async def parse_article(data)-> list:
             continue
     return result
 
-async def main():
+
+async def news_update():
     with open('example.html', 'r') as file_descr:
         result = file_descr.read()
         news = await parse_article(result)
         for news_item in news:
-            await write_news_in_db(news_item)
+            result = await read_one_news_from_db(news_item.news_id)
+            if result:
+                logging.info('News already in db...')
+                continue
+            else:
+                logging.info(f'News not in DB: {news_item.news_id}...')
+                await write_news_in_db(news_item)
 
-    # news = await read_news_from_db()
-    # for news_item in news:
-    #     print_news(news_item)
 
+async def news_read(count=10):
+    news = await read_news_from_db()
+    for news_item in news:
+        print_news(news_item)
+
+
+async def main():
+    await news_update()
 
 if __name__ == '__main__':
     asyncio.run(main())
