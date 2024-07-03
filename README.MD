@@ -15,4 +15,6 @@ pip install -r reqirements.txt
 create database help_bot;
 CREATE USER help_bot WITH PASSWORD 'help_bot';
 GRANT ALL PRIVILEGES ON DATABASE "help_bot" to help_bot;
+
+apt-get install redis
 ```

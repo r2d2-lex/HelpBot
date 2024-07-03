@@ -34,7 +34,8 @@ async def handler_get_habr_news(callback_query: types.CallbackQuery):
     result = await read_news_from_db()
     for article_item in result:
         message = (f'{article_item.title}\r\n\r\n'
-                   f'{article_item.content}\r\n')
+                   f'{article_item.content}\r\n'
+                   f'{article_item.url}\r\n')
         await callback_query.message.answer(message)
         sleep(0.2)
 
