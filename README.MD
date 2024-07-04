@@ -18,3 +18,10 @@ GRANT ALL PRIVILEGES ON DATABASE "help_bot" to help_bot;
 
 apt-get install redis
 ```
+
+Docker:
+```
+Создание, запуск:
+# docker build -t help_bot .
+# docker run help_bot
+```
