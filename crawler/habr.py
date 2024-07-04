@@ -74,7 +74,7 @@ async def parse_article(data)-> list:
                 image_url = article.find(class_='tm-article-snippet__cover_cover tm-article-snippet__cover').find('img')['src']
                 # image = image_content if image_content else bytes()
             )
-            print_news(news)
+            logging.info(news.title)
             result.append(news)
 
         except AttributeError as err:
@@ -84,17 +84,19 @@ async def parse_article(data)-> list:
 
 
 async def news_update():
-    with open('example.html', 'r') as file_descr:
-        result = file_descr.read()
-        news = await parse_article(result)
-        for news_item in news:
-            result = await read_one_news_from_db(news_item.news_id)
-            if result:
-                logging.info(f'News {news_item.news_id} already in db...')
-                continue
-            else:
-                logging.info(f'News not in DB: {news_item.news_id}...')
-                await write_news_in_db(news_item)
+    logging.info('Start update news...')
+    # with open('example.html', 'r') as file_descr:
+    #     result = file_descr.read()
+    result = await get_habr_news()
+    news = await parse_article(result)
+    for news_item in news:
+        result = await read_one_news_from_db(news_item.news_id)
+        if result:
+            logging.info(f'News {news_item.news_id} already in db...')
+            continue
+        else:
+            logging.info(f'News not in DB: {news_item.news_id}...')
+            await write_news_in_db(news_item)
 
 
 async def news_read():

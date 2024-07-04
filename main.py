@@ -32,14 +32,16 @@ async def handler_command_weather(callback_query: types.CallbackQuery):
 @dp.callback_query(F.data == 'habr_news')
 async def handler_get_habr_news(callback_query: types.CallbackQuery):
     result = await read_news_from_db()
-    for article_item in result:
-        message = (f'{article_item.title}\r\n\r\n'
-                   f'{article_item.content}\r\n'
-                   f'{article_item.url}\r\n')
-        await callback_query.message.answer(message)
-        sleep(0.2)
-
-    await callback_query.message.answer('/next_news', reply_markup=get_keyboard())
+    if result:
+        for article_item in result:
+            message = (f'{article_item.title}\r\n\r\n'
+                       f'{article_item.content}\r\n'
+                       f'{article_item.url}\r\n')
+            await callback_query.message.answer(message)
+            sleep(0.2)
+        await callback_query.message.answer('/next_news', reply_markup=get_keyboard())
+    else:
+        await callback_query.message.answer('News not found...')
     await callback_query.answer()
 
 
