@@ -1,7 +1,16 @@
 version: '3'
 
 services:
-  bot:
+  logs_template: &logs_template
+    image: alpine
+    logging:
+      options:
+        max-size: "5m"
+        max-file: "7"
+
+
+  help_bot:
+    <<: *logs_template
     container_name: help_bot
     build: .
     command: ["python", "main.py"]
