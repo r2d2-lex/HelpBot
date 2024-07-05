@@ -25,3 +25,15 @@ Docker:
 # docker build -t help_bot .
 # docker run help_bot
 ```
+
+Создание через docker-compose:
+```
+# docker-compose build bot
+# docker-compose run bot
+# docker-compose up --build bot
+```
+
+Запуск Celery:
+```
+celery -A tasks worker -B --loglevel=info
+```

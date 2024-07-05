@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  bot:
+    container_name: help_bot
+    build: .
+    command: ["python", "main.py"]
