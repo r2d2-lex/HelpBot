@@ -5,7 +5,7 @@ from crawler.habr import news_update, delete_old_news
 from celery import Celery
 from celery.schedules import crontab
 
-celery_app = Celery('tasks', broker='redis://localhost:6379/0')
+celery_app = Celery('tasks', broker='redis://redis:6379/0')
 
 
 @celery_app.task

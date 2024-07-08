@@ -14,3 +14,16 @@ services:
     container_name: help_bot
     build: .
     command: ["python", "main.py"]
+
+  redis:
+    <<: *logs_template
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+
+  celery:
+    build: .
+    <<: *logs_template
+    command: celery -A tasks worker --loglevel=debug --concurrency=4
+    depends_on:
+      - redis
