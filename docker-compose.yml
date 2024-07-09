@@ -21,13 +21,17 @@ services:
 
   redis:
     <<: *logs_template
+    container_name: redis
+    restart: unless-stopped
     image: "redis:alpine"
     ports:
       - "6379:6379"
 
   celery:
-    build: .
     <<: *logs_template
+    build: .
+    container_name: celery_help_bot
+    restart: unless-stopped
     command: celery -A tasks worker --loglevel=debug --concurrency=4
     depends_on:
       - redis
