@@ -15,6 +15,9 @@ services:
     restart: unless-stopped
     build: .
     command: ["python", "main.py"]
+    depends_on:
+      - redis
+      - celery
 
   redis:
     <<: *logs_template
