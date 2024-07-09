@@ -12,6 +12,7 @@ services:
   help_bot:
     <<: *logs_template
     container_name: help_bot
+    restart: unless-stopped
     build: .
     command: ["python", "main.py"]
 
