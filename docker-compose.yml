@@ -8,9 +8,16 @@ services:
         max-size: "5m"
         max-file: "7"
 
+  volumes_template: &volumes_template
+    image: alpine
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+
 
   help_bot:
     <<: *logs_template
+    <<: *volumes_template
     container_name: help_bot
     restart: unless-stopped
     build: .
@@ -21,6 +28,7 @@ services:
 
   redis:
     <<: *logs_template
+    <<: *volumes_template
     container_name: redis
     restart: unless-stopped
     image: "redis:alpine"
@@ -29,6 +37,7 @@ services:
 
   celery:
     <<: *logs_template
+    <<: *volumes_template
     build: .
     container_name: celery_help_bot
     restart: unless-stopped
