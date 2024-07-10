@@ -16,8 +16,7 @@ services:
 
 
   help_bot:
-    <<: *logs_template
-    <<: *volumes_template
+    <<: [*logs_template, *volumes_template]
     container_name: help_bot
     restart: unless-stopped
     build: .
@@ -27,8 +26,7 @@ services:
       - celery
 
   redis:
-    <<: *logs_template
-    <<: *volumes_template
+    <<: [*logs_template, *volumes_template]
     container_name: redis
     restart: unless-stopped
     image: "redis:alpine"
@@ -36,8 +34,7 @@ services:
       - "6379:6379"
 
   celery:
-    <<: *logs_template
-    <<: *volumes_template
+    <<: [*logs_template, *volumes_template]
     build: .
     container_name: celery_help_bot
     restart: unless-stopped
