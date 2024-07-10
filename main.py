@@ -1,5 +1,4 @@
 import asyncio
-import logging
 from time import sleep
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command
@@ -27,11 +26,16 @@ async def command_start(message: types.Message):
 async def handler_command_weather(callback_query: types.CallbackQuery):
     result = await get_weather_from_weather_api()
     await callback_query.message.answer(text=result, reply_markup=get_keyboard())
+    await callback_query.answer()
 
 
 @dp.callback_query(F.data == 'habr_news')
 async def handler_get_habr_news(callback_query: types.CallbackQuery):
-    result = await read_news_from_db()
+    result = None
+    try:
+        result = await read_news_from_db()
+    except OSError as err:
+        logging.info(f'read news error {err}')
     if result:
         for article_item in result:
             message = (f'{article_item.title}\r\n\r\n'
