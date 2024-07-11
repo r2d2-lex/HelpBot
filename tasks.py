@@ -6,6 +6,7 @@ from celery import Celery
 from celery.schedules import crontab
 
 celery_app = Celery('tasks', broker='redis://redis:6379/0')
+celery_app.conf.broker_connection_retry_on_startup = True
 
 
 @celery_app.task
