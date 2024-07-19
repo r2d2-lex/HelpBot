@@ -36,6 +36,6 @@ services:
     build: .
     container_name: help_bot_celery
     restart: unless-stopped
-    command: celery -A tasks worker --loglevel=debug --concurrency=4
+    command: celery -A tasks worker -B --loglevel=debug
     depends_on:
       - redis
